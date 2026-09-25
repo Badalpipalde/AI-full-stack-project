@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const tokenBlackListModel = require("../models/blacklist.model");
+const redis = require("ioredis").default
 
 
 /**
@@ -60,6 +61,12 @@ async function registerUserController(req,res){
         
 }
 
+/**
+ * @name loginUserController
+ * @description login users expect username email password from the body
+ * @acess Public
+ *  
+ */
 async function loginUserController(req,res){
     console.log("REQ BODY:", req.body);
     const { email, password} = req.body;
@@ -101,19 +108,50 @@ async function loginUserController(req,res){
 
 }
 
+/**
+ * @name logoutrUserController
+ * @description log out users by blacklisting user token
+ * @acess Public
+ *  
+ */
 async function logoutUserController(req,res){
     const token = req.cookies.token
 
-    if(token){
-        await tokenBlackListModel.create({token})
-    }
+    try { const token = req.cookies.token; 
+     if (token){ 
+        await tokenBlackListModel.create({ token });
+        redis.set( token, Date.now().toString(), "EX", 60 * 60 );
+    } 
+        res.clearCookie("token"); 
+        res.status(200).json({ message: "User logged out successfully" });
+    } 
+     catch (error) {
+        console.error(error); 
+        res.status(500).json({ message: "Internal server error" });
+     }
+}
 
-    res.clearCookie("token");
 
-    res.status(201).json({
-        message:"user is logout successfully"
+/**
+ * @name getMeUserController
+ * @description gets current logged in users information 
+ * @acess private
+ */
+async function getMeController(req,res){
+    const user = await userModel.findOne(req.user.id);
+
+    res.status(200).json({
+        message: "user details fetched successfully",
+        user:{
+            id: user._id,
+            email: user.email,
+            username: user.username
+        }
     })
 }
+
+
+
 
 
 module.exports = {

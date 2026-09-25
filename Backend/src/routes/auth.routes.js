@@ -2,6 +2,8 @@ const express = require("express");
 const authController = require("../controllers/auth.controller");
 const userModel = require("../models/user.model");
 const authRouter = express.Router();   //isme express require krne bad  router create krna padta hai
+const authMiddleware = require("../middleware/auth.middleware");
+
 
 /**
  * @route Post /api/auth/register
@@ -25,6 +27,13 @@ authRouter.post("/login", authController.loginUserController)
  * @access Public
  */
 authRouter.get("/logout", authController.logoutUserController)
+
+/**
+ * @route get/api/auth/get-me
+ * @description idenfies which information  of currently loggged in user
+ * @access Private
+ */
+authRouter.get("/get-me", authMiddleware.authUser)
 
 
 module.exports = authRouter;
