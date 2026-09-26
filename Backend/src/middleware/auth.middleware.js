@@ -21,9 +21,22 @@ async function authUser(req,res,next){
 
     const isTokenBlacklistedinRedis = await redis.get(token)
 
+    if(isTokenBlacklisted){
+        return res.status(401).json({
+            message: "invalid token"
+        })
+    }
+
+    if(isTokenBlacklistedinRedis){
+        return res.status(401).json({
+            message: "invalid token"
+        })
+    }
+
     try{
         const decoded = jwt.verify(token,process.env.JWT_SECRET);
         req.user = decoded;
+        next();    // agar ye nhi likha to decoded next controller me pass nhi ho payega
     }
     catch(err){
         return res.status(401).json({
