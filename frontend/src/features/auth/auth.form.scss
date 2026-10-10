@@ -1,0 +1,37 @@
+main{
+    min-height: 100vh;
+    min-width: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    
+    .form-container{
+        min-width: 350px;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    form{
+        display: flex;
+        flex-direction: column;
+        gap: 0.7rem;
+    }
+
+    .input-group{
+        display: flex;
+        flex-direction: column;
+
+        gap: 0.5rem ;
+        
+    input{
+        border: none;
+        outline: none;
+        padding-inline: 0.5rem;
+        padding-block: 0.5rem;
+        border-radius: 0.7rem;
+    }
+
+  }
+}
